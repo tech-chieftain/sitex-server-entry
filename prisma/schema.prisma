@@ -2,17 +2,19 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-model Todo {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  text      String
-  completed Boolean
+model User{
+  id       Int      @id @default(autoincrement())
+  name     String
+  phoneNumber String
+  email     String   @unique
+  interests String?
+  worldCupChoice String?
 }

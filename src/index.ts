@@ -10,52 +10,38 @@ app.use(express.json());
 app.use(express.raw({ type: "application/vnd.custom-type" }));
 app.use(express.text({ type: "text/html" }));
 
-app.get("/todos", async (req, res) => {
-  const todos = await prisma.todo.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-
-  res.json(todos);
-});
-
-app.post("/todos", async (req, res) => {
-  const todo = await prisma.todo.create({
+// POST /users
+app.post("/users", async (req, res) => {
+  const { name, email, phoneNumber, interests, worldCupChoice } = req.body;
+  console.log(req.body);
+  
+  const user = await prisma.user.create({
     data: {
-      completed: false,
-      createdAt: new Date(),
-      text: req.body.text ?? "Empty todo",
+      name,
+      phoneNumber,
+      email,
+      interests,
+      worldCupChoice,
     },
   });
-
-  return res.json(todo);
+  res.json(user);
 });
 
-app.get("/todos/:id", async (req, res) => {
-  const id = req.params.id;
-  const todo = await prisma.todo.findUnique({
-    where: { id },
-  });
-
-  return res.json(todo);
+// GET /users
+app.get("/users", async (req, res) => {
+  const users = await prisma.user.findMany();
+  res.json(users);
 });
 
-app.put("/todos/:id", async (req, res) => {
-  const id = req.params.id;
-  const todo = await prisma.todo.update({
-    where: { id },
-    data: req.body,
+// GET /users/:id
+app.get("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  const user = await prisma.user.findUnique({
+    where: {
+      id: Number(id),
+    },
   });
-
-  return res.json(todo);
-});
-
-app.delete("/todos/:id", async (req, res) => {
-  const id = req.params.id;
-  await prisma.todo.delete({
-    where: { id },
-  });
-
-  return res.send({ status: "ok" });
+  res.json(user);
 });
 
 app.get("/", async (req, res) => {
@@ -64,10 +50,10 @@ app.get("/", async (req, res) => {
   <h1>Todo REST API</h1>
   <h2>Available Routes</h2>
   <pre>
-    GET, POST /todos
-    GET, PUT, DELETE /todos/:id
+    GET, POST /users
+    GET, PUT, DELETE /users/:id
   </pre>
-  `.trim(),
+  `.trim()
   );
 });
 
